@@ -61,6 +61,18 @@ app.get('/frutas/buscar', (req, res) => {
  */
 app.get('/frutas/:id', (req, res) => {
   // Tu código aquí
+  const id = Number(req.params.id);
+
+  const data = fs.readFileSync(dataFilePath, 'utf8');
+  const frutas = JSON.parse(data);
+
+  const fruta = frutas.find((item) => item.id === id);
+
+  if (!fruta) {
+    return res.status(404).json({ error: 'Fruta no encontrada' });
+  }
+
+  return res.status(200).json(fruta);
 });
 
 /**
