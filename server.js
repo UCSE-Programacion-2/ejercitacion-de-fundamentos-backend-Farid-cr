@@ -86,6 +86,26 @@ app.get('/frutas/:id', (req, res) => {
  */
 app.post('/frutas', (req, res) => {
   // Tu código aquí
+  const nuevaFruta = req.body;
+
+  const data = fs.readFileSync(dataFilePath, 'utf8');
+  const frutas = JSON.parse(data);
+
+  const maxId = Math.max(...frutas.map((fruta) => fruta.id));
+
+  const frutaCreada = {
+    id: maxId + 1,
+    ...nuevaFruta,
+  };
+
+  frutas.push(frutaCreada);
+
+  fs.writeFileSync(
+    dataFilePath,
+    JSON.stringify(frutas, null, 2)
+  );
+
+  return res.status(201).json(frutaCreada);
 });
 
 // Iniciar el servidor
