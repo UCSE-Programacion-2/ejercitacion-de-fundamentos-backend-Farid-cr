@@ -32,7 +32,10 @@ const dataFilePath = path.join(__dirname, 'data', 'frutas.json');
  * 3. Debe retornar el arreglo de frutas con un status 200.
  */
 app.get('/frutas', (req, res) => {
-  // Tu código aquí
+  const data = fs.readFileSync(dataFilePath, 'utf8');
+  const frutas = JSON.parse(data);
+
+  return res.status(200).json(frutas);
 });
 
 /**
@@ -45,6 +48,17 @@ app.get('/frutas', (req, res) => {
  */
 app.get('/frutas/buscar', (req, res) => {
   // Tu código aquí
+  const nombre = req.query.nombre;
+
+  const data = fs.readFileSync(dataFilePath, 'utf8');
+  const frutas = JSON.parse(data);
+
+  const frutasFiltradas = frutas.filter(
+    (fruta) =>
+      fruta.nombre.toLowerCase().includes(nombre.toLowerCase())
+  );
+
+  return res.status(200).json(frutasFiltradas);
 });
 
 /**
@@ -58,6 +72,18 @@ app.get('/frutas/buscar', (req, res) => {
  */
 app.get('/frutas/:id', (req, res) => {
   // Tu código aquí
+  const id = Number(req.params.id);
+
+  const data = fs.readFileSync(dataFilePath, 'utf8');
+  const frutas = JSON.parse(data);
+
+  const fruta = frutas.find((item) => item.id === id);
+
+  if (!fruta) {
+    return res.status(404).json({ error: 'Fruta no encontrada' });
+  }
+
+  return res.status(200).json(fruta);
 });
 
 /**
@@ -71,6 +97,26 @@ app.get('/frutas/:id', (req, res) => {
  */
 app.post('/frutas', (req, res) => {
   // Tu código aquí
+  const nuevaFruta = req.body;
+
+  const data = fs.readFileSync(dataFilePath, 'utf8');
+  const frutas = JSON.parse(data);
+
+  const maxId = Math.max(...frutas.map((fruta) => fruta.id));
+
+  const frutaCreada = {
+    id: maxId + 1,
+    ...nuevaFruta,
+  };
+
+  frutas.push(frutaCreada);
+
+  fs.writeFileSync(
+    dataFilePath,
+    JSON.stringify(frutas, null, 2)
+  );
+
+  return res.status(201).json(frutaCreada);
 });
 
 // Iniciar el servidor
