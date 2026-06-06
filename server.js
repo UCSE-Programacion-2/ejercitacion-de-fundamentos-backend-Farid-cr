@@ -48,6 +48,17 @@ app.get('/frutas', (req, res) => {
  */
 app.get('/frutas/buscar', (req, res) => {
   // Tu código aquí
+  const nombre = req.query.nombre;
+
+  const data = fs.readFileSync(dataFilePath, 'utf8');
+  const frutas = JSON.parse(data);
+
+  const frutasFiltradas = frutas.filter(
+    (fruta) =>
+      fruta.nombre.toLowerCase().includes(nombre.toLowerCase())
+  );
+
+  return res.status(200).json(frutasFiltradas);
 });
 
 /**
